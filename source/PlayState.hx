@@ -6,7 +6,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 
 class PlayState extends FlxState {
-    public var level:LevelTest;
+    public var level:TiledLevel;
 
 	public var cameraPos:FlxObject;
     public var player:Player;
@@ -18,16 +18,16 @@ class PlayState extends FlxState {
         bgColor = 0xffaaaaaa;
 
         // Load the level's tilemaps
-        level = new LevelTest("assets/tiled/lvl_test.tmx", this);
+        level = LevelLoader.LoadLevel("assets/tiled/lvl_test.tmx", this);
 
         // Add backgrounds
         add(level.backgroundLayer);
 
         // Add foreground tiles after adding level objects, so these tiles render on top of player
-        add(level.wallsLayer);
+        add(level.collisionLayer);
 
         // Load player objects
-        add(level.objectsLayer);
+        add(level.informationLayer);
 
 		//FlxG.camera.setPosition(cameraPos.x, cameraPos.y);
         FlxG.camera.follow(player, SCREEN_BY_SCREEN, 1);

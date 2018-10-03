@@ -1,0 +1,4 @@
+level,north,east,south,west
+lvl_test1,lvl_test2,0,0,0
+lvl_test2,0,0,lvl_test1,0
+

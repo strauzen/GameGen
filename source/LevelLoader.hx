@@ -1,46 +1,66 @@
 package ;
 
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.addons.editors.tiled.TiledLayer.TiledLayerType;
 import flixel.addons.editors.tiled.TiledMap;
 import flixel.addons.editors.tiled.TiledObject;
 import flixel.addons.editors.tiled.TiledObjectLayer;
-import flixel.addons.editors.tiled.TiledTileLayer;
+import flixel.addons.editors.tiled.TiledTileLayer; 
 import flixel.addons.editors.tiled.TiledTileSet;
 import flixel.addons.tile.FlxTilemapExt;
-import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
 import flixel.tile.FlxTilemap;
 import haxe.io.Path;
 
-class LevelTest extends TiledMap {
+class LevelLoader extends TiledMap {
 
     // Path for TiledMap Editor related assets
     inline static var c_PATH_LEVEL_TILESHEETS = "assets/tiled/";
 
-    // Layers used in the editor
-    //public var foregroundLayer:FlxGroup;
-    public var objectsLayer:FlxGroup;
-    public var backgroundLayer:FlxGroup;
-    public var wallsLayer:FlxGroup;
+	// Container that encapsulates the tiled level
+	public var loadedLevel:TiledLevel;
+	
+    // Object layers used in the editor
+	private var informationLayer:FlxGroup;
+	private var enemiesLayer:FlxGroup;
+	private var puzzlesLayer:FlxGroup;
+	
+	// Tile layers used in the editor according to draw order and properties
+    private var backgroundLayer:FlxGroup;
+    private var collisionLayer:FlxGroup;
+	private var foregroundLayer:FlxGroup;
     var collidableTileLayers:Array<FlxTilemap>;
 
-    public function new(tiledLevel:FlxTiledMapAsset, state:PlayState) {
+    function new(tiledLevel:FlxTiledMapAsset, state:PlayState) {
         super(tiledLevel);
 
-        objectsLayer = new FlxGroup();
+        informationLayer = new FlxGroup();
+		enemiesLayer = new FlxGroup();
+		puzzlesLayer = new FlxGroup();
+		
         backgroundLayer = new FlxGroup();
-        wallsLayer = new FlxGroup();
-
-        FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
+        collisionLayer = new FlxGroup();
+		foregroundLayer = new FlxGroup();
 
         loadObjects(state);
         loadTiles();
+		
+		// Set the camera information
+		FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
+		
+		this.loadedLevel = new TiledLevel(informationLayer, enemiesLayer, puzzlesLayer, 
+		backgroundLayer, collisionLayer, foregroundLayer, collidableTileLayers);
     }
 
-    public function loadTiles() {
+	public static function LoadLevel(tiledLevel:FlxTiledMapAsset, state:PlayState):TiledLevel {
+		var levelLoader = new LevelLoader(tiledLevel, state);
+		return levelLoader.loadedLevel;
+	}
+	
+    private function loadTiles() {
         // Load Tile Maps
         for (layer in layers) {
             // If it is not a tile layer go to the next one
@@ -79,13 +99,13 @@ class LevelTest extends TiledMap {
                 if (collidableTileLayers == null)
                     collidableTileLayers = new Array<FlxTilemap>();
 
-                wallsLayer.add(tilemap);
+                collisionLayer.add(tilemap);
                 collidableTileLayers.push(tilemap);
             }
         }
     }
 
-    public function loadObjects(state:PlayState) {
+    private function loadObjects(state:PlayState) {
         for (layer in layers) {
             if (layer.type != TiledLayerType.OBJECT)
                 continue;
@@ -94,13 +114,13 @@ class LevelTest extends TiledMap {
             //objects layer
             if (layer.name == "objects") {
                 for (o in objectLayer.objects) {
-                    loadObject(state, o, objectLayer, objectsLayer);
+                    loadObject(state, o, objectLayer, informationLayer);
                 }
             }
         }
     }
 
-    function loadObject(state:PlayState, o:TiledObject, g:TiledObjectLayer, group:FlxGroup) {
+    private function loadObject(state:PlayState, o:TiledObject, g:TiledObjectLayer, group:FlxGroup) {
         var x:Int = o.x;
         var y:Int = o.y;
 
@@ -127,19 +147,5 @@ class LevelTest extends TiledMap {
                 state.exit = exit;
                 group.add(exit);
         }
-    }
-
-    public function collideWithLevel(obj:FlxObject, ?notifyCallback:FlxObject -> FlxObject -> Void, ?processCallback:FlxObject -> FlxObject -> Bool):Bool {
-        if (collidableTileLayers == null)
-            return false;
-
-        for (map in collidableTileLayers) {
-            // IMPORTANT: Always collide the map with objects, not the other way around.
-            //            This prevents odd collision errors (collision separation code off by 1 px).
-            if (FlxG.overlap(map, obj, notifyCallback, processCallback != null ? processCallback : FlxObject.separate)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
