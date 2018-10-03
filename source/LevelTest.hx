@@ -110,6 +110,10 @@ class LevelTest extends TiledMap {
 
         switch (o.type.toLowerCase())
         {
+			case "camera_pos":
+				var cameraPos = new FlxObject(x, y);
+				state.cameraPos = cameraPos;
+				
             case "player_start":
                 var player = new Player(x, y);
                 state.player = player;

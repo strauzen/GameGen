@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -9,6 +8,7 @@ import flixel.FlxState;
 class PlayState extends FlxState {
     public var level:LevelTest;
 
+	public var cameraPos:FlxObject;
     public var player:Player;
     public var exit:FlxSprite;
 
@@ -29,7 +29,8 @@ class PlayState extends FlxState {
         // Load player objects
         add(level.objectsLayer);
 
-        FlxG.camera.follow(player, TOPDOWN, 1);
+		//FlxG.camera.setPosition(cameraPos.x, cameraPos.y);
+        FlxG.camera.follow(player, SCREEN_BY_SCREEN, 1);
 
         super.create();
     }
