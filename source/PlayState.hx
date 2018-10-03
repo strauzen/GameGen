@@ -4,9 +4,11 @@ import flixel.FlxObject;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import map.LevelLoader;
+import map.TiledLevel;
 
 class PlayState extends FlxState {
-    public var level:TiledLevel;
+    public var level:map.TiledLevel;
 
 	public var cameraPos:FlxObject;
     public var player:Player;
@@ -21,15 +23,25 @@ class PlayState extends FlxState {
         level = LevelLoader.LoadLevel("assets/tiled/lvl_test.tmx", this);
 
         // Add backgrounds
-        add(level.backgroundLayer);
+        add(level.layers.backgroundTiles);
 
-        // Add foreground tiles after adding level objects, so these tiles render on top of player
-        add(level.collisionLayer);
+        // Add collision tiles
+        add(level.layers.collisionTiles);
 
-        // Load player objects
-        add(level.informationLayer);
-
-		//FlxG.camera.setPosition(cameraPos.x, cameraPos.y);
+        // Load map information objects
+        add(level.objects.information);
+		
+		// Load enemies objects
+		add(level.objects.enemies);
+		
+		// Load puzzle objects
+		add(level.objects.puzzles);
+		
+		// Add foreground tiles after the objects so they are rendered on top of the player
+		add(level.layers.foregroundTiles);
+		
+		// Set the camera information
+		FlxG.camera.setScrollBoundsRect(0, 0, level.fullWidth, level.fullHeight, true);
         FlxG.camera.follow(player, SCREEN_BY_SCREEN, 1);
 
         super.create();

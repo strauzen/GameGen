@@ -1,7 +1,5 @@
-package ;
+package map ;
 
-import flixel.FlxG;
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.editors.tiled.TiledLayer.TiledLayerType;
 import flixel.addons.editors.tiled.TiledMap;
@@ -12,8 +10,8 @@ import flixel.addons.editors.tiled.TiledTileSet;
 import flixel.addons.tile.FlxTilemapExt;
 import flixel.group.FlxGroup;
 import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
-import flixel.tile.FlxTilemap;
 import haxe.io.Path;
+import map.TiledLevel;
 
 class LevelLoader extends TiledMap {
 
@@ -21,7 +19,7 @@ class LevelLoader extends TiledMap {
     inline static var c_PATH_LEVEL_TILESHEETS = "assets/tiled/";
 
 	// Container that encapsulates the tiled level
-	public var loadedLevel:TiledLevel;
+	public var loadedLevel:map.TiledLevel;
 	
     // Object layers used in the editor
 	private var informationLayer:FlxGroup;
@@ -32,7 +30,6 @@ class LevelLoader extends TiledMap {
     private var backgroundLayer:FlxGroup;
     private var collisionLayer:FlxGroup;
 	private var foregroundLayer:FlxGroup;
-    var collidableTileLayers:Array<FlxTilemap>;
 
     function new(tiledLevel:FlxTiledMapAsset, state:PlayState) {
         super(tiledLevel);
@@ -48,14 +45,14 @@ class LevelLoader extends TiledMap {
         loadObjects(state);
         loadTiles();
 		
-		// Set the camera information
-		FlxG.camera.setScrollBoundsRect(0, 0, fullWidth, fullHeight, true);
-		
-		this.loadedLevel = new TiledLevel(informationLayer, enemiesLayer, puzzlesLayer, 
-		backgroundLayer, collisionLayer, foregroundLayer, collidableTileLayers);
+		// We build the level information in its containers
+		var objects:ObjectLayers = new ObjectLayers(informationLayer, collisionLayer, foregroundLayer);
+		var layers:TileLayers = new TileLayers(backgroundLayer, collisionLayer, foregroundLayer);
+		this.loadedLevel = new map.TiledLevel(width, height, tileWidth, tileHeight, fullWidth, fullHeight, 
+		objects, layers);
     }
 
-	public static function LoadLevel(tiledLevel:FlxTiledMapAsset, state:PlayState):TiledLevel {
+	public static function LoadLevel(tiledLevel:FlxTiledMapAsset, state:PlayState):map.TiledLevel {
 		var levelLoader = new LevelLoader(tiledLevel, state);
 		return levelLoader.loadedLevel;
 	}
@@ -95,12 +92,11 @@ class LevelLoader extends TiledMap {
             if (tileLayer.properties.contains("nocollide")) {
                 backgroundLayer.add(tilemap);
             }
+			else if (tileLayer.properties.contains("foreground")) {
+				foregroundLayer.add(tilemap);
+			}
             else {
-                if (collidableTileLayers == null)
-                    collidableTileLayers = new Array<FlxTilemap>();
-
                 collisionLayer.add(tilemap);
-                collidableTileLayers.push(tilemap);
             }
         }
     }
@@ -129,11 +125,7 @@ class LevelLoader extends TiledMap {
             y -= g.map.getGidOwner(o.gid).tileHeight;
 
         switch (o.type.toLowerCase())
-        {
-			case "camera_pos":
-				var cameraPos = new FlxObject(x, y);
-				state.cameraPos = cameraPos;
-				
+        {	
             case "player_start":
                 var player = new Player(x, y);
                 state.player = player;
