@@ -13,6 +13,32 @@ import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
 import haxe.io.Path;
 import map.TiledLevel;
 
+/**
+ * Class that loads a TiledMap Editor level from the assets/tiled/ directory. It expects the following information:
+ * 
+ * One to three object layers, the layers are identified by a custom property called "dev_name" which can have the 
+ * following values:
+ *     - informationLayer: Mandatory. This layer contains information such as where the player should start or where is 
+ *                         the end of a level.
+ *     - enemiesLayer:     Optional. This layer contains the information such as the enemy positions in the level and 
+ *                         their type.
+ *     - puzzlesLayer:     Optional. This layer contains the information such as the positions of puzzle related objects 
+ *                         in the level and their type.
+ * 
+ * One to three tile layers, the layers are identified by a custom property called "dev_name" which can have the 
+ * following values:
+ *     - backgroundLayer: Optional. This layer contains the information of the non-collidable tiles of the level that are
+ *                        drawn under the object layers.
+ *     - collisionLayer:  Optional. This layer contains the information of all the collidable tiles in the level.
+ *     - foregroundLayer: Optional. This layer contains the information of all the non-collidable tiles of the level that are
+ *                        drawn under the object layers.
+ * Additionally, tile layers need to have a custom string property "tileset" that contains the name of the tileset they 
+ * are using. The name needs to be written without extensions.
+ * 
+ * @author Strauzen
+ * 
+ * Based on the code of the TiledEditor demo from the haxe-flixel engine written by @author Gama11.
+ */
 class LevelLoader extends TiledMap {
 
     // Path for TiledMap Editor related assets
@@ -89,15 +115,16 @@ class LevelLoader extends TiledMap {
             tilemap.loadMapFromArray(tileLayer.tileArray, width, height, processedPath,
             tileSet.tileWidth, tileSet.tileHeight, FlxTilemapAutoTiling.OFF, tileSet.firstGID, 1, 1);
 
-            if (tileLayer.properties.contains("nocollide")) {
-                backgroundLayer.add(tilemap);
-            }
-			else if (tileLayer.properties.contains("foreground")) {
-				foregroundLayer.add(tilemap);
+			switch(tileLayer.properties.get("dev_name").toLowerCase()) {
+				case "lvl_background":
+					backgroundLayer.add(tilemap);
+					
+				case "lvl_collision":
+					collisionLayer.add(tilemap);
+					
+				case "lvl_foreground":
+					foregroundLayer.add(tilemap);
 			}
-            else {
-                collisionLayer.add(tilemap);
-            }
         }
     }
 
@@ -108,14 +135,25 @@ class LevelLoader extends TiledMap {
             var objectLayer:TiledObjectLayer = cast layer;
 
             //objects layer
-            if (layer.name == "objects") {
-                for (o in objectLayer.objects) {
-                    loadObject(state, o, objectLayer, informationLayer);
-                }
-            }
+			switch (layer.properties.get("dev_name").toLowerCase()) {
+				case "lvl_information":
+					loadObjectLayer(state, objectLayer, informationLayer);
+					
+				case "lvl_enemies":
+					loadObjectLayer(state, objectLayer, enemiesLayer);
+					
+				case "lvl_puzzles":
+					loadObjectLayer(state, objectLayer, puzzlesLayer);
+			}
         }
     }
 
+	private function loadObjectLayer(state:PlayState, objectLayer:TiledObjectLayer, group:FlxGroup) {
+		for (o in objectLayer.objects) {
+			loadObject(state, o, objectLayer, group);
+		}
+	}
+	
     private function loadObject(state:PlayState, o:TiledObject, g:TiledObjectLayer, group:FlxGroup) {
         var x:Int = o.x;
         var y:Int = o.y;

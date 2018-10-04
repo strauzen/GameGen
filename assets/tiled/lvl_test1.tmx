@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="4">
  <properties>
+  <property name="dev_name" value="lvl_background"/>
   <property name="tileset" type="file" value="dgn_test.png"/>
  </properties>
  <tileset firstgid="1" source="dgn_test.tsx"/>
  <layer id="4" name="Floor" width="16" height="14">
   <properties>
-   <property name="nocollide" value="true"/>
+   <property name="dev_name" value="lvl_background"/>
    <property name="tileset" value="dgn_test"/>
   </properties>
   <data encoding="csv">
@@ -28,6 +29,7 @@
  </layer>
  <layer id="5" name="Walls" width="16" height="14">
   <properties>
+   <property name="dev_name" value="lvl_collision"/>
    <property name="tileset" value="dgn_test"/>
   </properties>
   <data encoding="csv">
@@ -47,7 +49,10 @@
 99,100,102,102,103,104,101,0,0,101,102,103,104,103,105,106
 </data>
  </layer>
- <objectgroup id="3" name="objects">
+ <objectgroup id="3" name="Map information">
+  <properties>
+   <property name="dev_name" value="lvl_information"/>
+  </properties>
   <object id="1" name="player_start" type="player_start" x="128" y="208"/>
   <object id="2" name="exit" type="exit" x="128" y="16"/>
  </objectgroup>
