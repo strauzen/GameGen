@@ -13,11 +13,10 @@ class TileLayers
     public var collisionTiles(default, null):FlxGroup;
 	public var foregroundTiles(default, null):FlxGroup;
 	
-	public function new(backgroundLayer:FlxGroup, collisionLayer:FlxGroup, foregroundLayer:FlxGroup) 
+	public function new(?backgroundLayer:FlxGroup, ?collisionLayer:FlxGroup, ?foregroundLayer:FlxGroup) 
 	{
-		this.backgroundTiles = backgroundLayer;
-		this.collisionTiles = collisionLayer;
-		this.foregroundTiles = foregroundLayer;
+		this.backgroundTiles = if (backgroundLayer != null) backgroundLayer else new FlxGroup();
+		this.collisionTiles = if (collisionLayer != null) collisionLayer else new FlxGroup();
+		this.foregroundTiles = if (foregroundLayer != null) foregroundLayer else new FlxGroup();
 	}
-	
 }

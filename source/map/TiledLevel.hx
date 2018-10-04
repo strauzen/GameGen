@@ -35,10 +35,9 @@ class TiledLevel
 		this.layers = layers;
 	}
 		
-	public function collideWithLevel(obj:FlxObject, ?notifyCallback:FlxObject -> FlxObject -> Void, ?processCallback:FlxObject -> FlxObject -> Bool):Bool {
-        if (layers.collisionTiles == null)
-            return false;
-
+	public function collideWithLevel(obj:FlxObject, ?notifyCallback:FlxObject -> FlxObject -> Void, 
+	?processCallback:FlxObject -> FlxObject -> Bool):Bool {
+		
         for (tilemap in layers.collisionTiles.members) {
             // IMPORTANT: Always collide the map with objects, not the other way around.
             //            This prevents odd collision errors (collision separation code off by 1 px).
@@ -48,4 +47,10 @@ class TiledLevel
         }
         return false;
     }
+	
+	public function collideWithLevelBorder(obj:FlxObject, ?notifyCallback:FlxObject -> FlxObject -> Void, 
+	?ProcessCallback:FlxObject -> FlxObject -> Bool):Bool {
+		//TODO this function to detect a level transition
+		return false;
+	}
 }
