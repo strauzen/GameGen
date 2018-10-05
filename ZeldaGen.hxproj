@@ -41,6 +41,7 @@
   <compileTargets>
     <compile path="src\Main.hx" />
     <compile path="source\Main.hx" />
+    <compile path="source\map\TiledLevel.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

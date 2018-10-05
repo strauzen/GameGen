@@ -74,8 +74,7 @@ class LevelLoader extends TiledMap {
 		// We build the level information in its containers
 		var objects:ObjectLayers = new ObjectLayers(informationLayer, collisionLayer, foregroundLayer);
 		var layers:TileLayers = new TileLayers(backgroundLayer, collisionLayer, foregroundLayer);
-		this.loadedLevel = new map.TiledLevel(width, height, tileWidth, tileHeight, fullWidth, fullHeight, 
-		objects, layers);
+		this.loadedLevel = new map.TiledLevel(width, height, tileWidth, tileHeight, objects, layers);
     }
 
 	public static function LoadLevel(tiledLevel:FlxTiledMapAsset, state:PlayState):map.TiledLevel {

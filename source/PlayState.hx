@@ -16,11 +16,12 @@ class PlayState extends FlxState {
 
     override public function create():Void {
         FlxG.mouse.visible = false;
-
+		
         bgColor = 0xffaaaaaa;
 
         // Load the level's tilemaps
         level = LevelLoader.LoadLevel("assets/tiled/lvl_test1.tmx", this);
+		FlxG.worldBounds.set(0 - level.tileWidth * 2, 0 - level.tileHeight * 2, FlxG.width + (level.tileWidth * 2), FlxG.height + (level.tileHeight * 2));
 
         // Add backgrounds
         add(level.layers.backgroundTiles);
@@ -37,11 +38,14 @@ class PlayState extends FlxState {
 		// Load puzzle objects
 		add(level.objects.puzzles);
 		
+		// Load the level boundaries
+		add(level.objects.levelBounds);
+		
 		// Add foreground tiles after the objects so they are rendered on top of the player
 		add(level.layers.foregroundTiles);
 		
 		// Set the camera information
-		FlxG.camera.setScrollBoundsRect(0, 0, level.fullWidth, level.fullHeight, true);
+		FlxG.camera.setScrollBoundsRect(0, 0, FlxG.width, FlxG.height, true);
         FlxG.camera.follow(player, SCREEN_BY_SCREEN, 1);
 
         super.create();
@@ -52,8 +56,7 @@ class PlayState extends FlxState {
 
         // Collide with foreground tile layer
         level.collideWithLevel(player);
-		// TODO implement this with callbacks?
-		if (level.collideWithLevelBorder(player)){
+		if (level.collideWithLevelBorder(player)) {
 			trace("Hello");
 		}
 
@@ -62,5 +65,6 @@ class PlayState extends FlxState {
 
     public function win(Exit:FlxObject, Player:FlxObject):Void
     {
+		player.kill();
     }
 }
