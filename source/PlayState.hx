@@ -21,7 +21,8 @@ class PlayState extends FlxState {
 
         // Load the level's tilemaps
         level = LevelLoader.LoadLevel("assets/tiled/lvl_test1.tmx", this);
-		FlxG.worldBounds.set(0 - level.tileWidth * 2, 0 - level.tileHeight * 2, FlxG.width + (level.tileWidth * 2), FlxG.height + (level.tileHeight * 2));
+		FlxG.worldBounds.set(0 - level.tileWidth * 2, 0 - level.tileHeight * 2, 
+		FlxG.width + (level.tileWidth * 2), FlxG.height + (level.tileHeight * 2));
 
         // Add backgrounds
         add(level.layers.backgroundTiles);
