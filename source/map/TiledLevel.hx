@@ -50,7 +50,12 @@ class TiledLevel
 	
 	public function collideWithLevelBorder(obj:FlxObject, ?notifyCallback:FlxObject -> FlxObject -> Void, 
 	?ProcessCallback:FlxObject -> FlxObject -> Bool):Bool {
+		// IMPORTANT: Always collide the map with objects, not the other way around.
+        //            This prevents odd collision errors (collision separation code off by 1 px).
 		//TODO this function to detect a level transition
+		if (obj.x < 0 || (obj.x + obj.width) > fullWidth || obj.y < 0 || (obj.y + obj.height) > fullHeight) {
+			return true;
+		}
 		return false;
 	}
 }

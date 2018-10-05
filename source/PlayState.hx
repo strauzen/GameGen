@@ -20,7 +20,7 @@ class PlayState extends FlxState {
         bgColor = 0xffaaaaaa;
 
         // Load the level's tilemaps
-        level = LevelLoader.LoadLevel("assets/tiled/lvl_test.tmx", this);
+        level = LevelLoader.LoadLevel("assets/tiled/lvl_test1.tmx", this);
 
         // Add backgrounds
         add(level.layers.backgroundTiles);
@@ -52,6 +52,10 @@ class PlayState extends FlxState {
 
         // Collide with foreground tile layer
         level.collideWithLevel(player);
+		// TODO implement this with callbacks?
+		if (level.collideWithLevelBorder(player)){
+			trace("Hello");
+		}
 
         FlxG.overlap(exit, player, win);
     }
